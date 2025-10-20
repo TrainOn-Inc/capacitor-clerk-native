@@ -1,10 +1,13 @@
 {
-  "name": "capacitor-clerk-native",
+  "name": "@trainon-inc/capacitor-clerk-native",
   "version": "1.0.0",
   "description": "Capacitor plugin for Clerk native authentication using bridge pattern to integrate Clerk iOS/Android SDKs with CocoaPods/Gradle",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -25,12 +28,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trainon/capacitor-clerk-native.git"
+    "url": "git+https://github.com/TrainOn-Inc/capacitor-clerk-native.git"
   },
   "bugs": {
-    "url": "https://github.com/trainon/capacitor-clerk-native/issues"
+    "url": "https://github.com/TrainOn-Inc/capacitor-clerk-native/issues"
   },
-  "homepage": "https://github.com/trainon/capacitor-clerk-native#readme",
+  "homepage": "https://github.com/TrainOn-Inc/capacitor-clerk-native#readme",
   "keywords": [
     "capacitor",
     "capacitor-plugin",
@@ -48,7 +51,10 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf ./dist",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "prepublishOnly": "npm run clean && npm run build",
+    "version": "npm run build",
+    "postversion": "git push && git push --tags"
   },
   "devDependencies": {
     "@capacitor/android": "^6.0.0",

@@ -24,12 +24,30 @@ This allows your Capacitor app to use Clerk's native iOS/Android SDKs, avoiding 
 
 ## Installation
 
+### From GitHub Packages (Recommended)
+
+1. Create a `.npmrc` file in your project root:
+```
+@trainon-inc:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+```
+
+2. Install the package:
+```bash
+npm install @trainon-inc/capacitor-clerk-native
+# or
+pnpm add @trainon-inc/capacitor-clerk-native
+# or
+yarn add @trainon-inc/capacitor-clerk-native
+```
+
+> **Note**: You'll need a GitHub Personal Access Token with `read:packages` permission. [Create one here](https://github.com/settings/tokens/new?scopes=read:packages)
+
+### From NPM (Future)
+
+Once published to npm:
 ```bash
 npm install capacitor-clerk-native
-# or
-pnpm add capacitor-clerk-native
-# or
-yarn add capacitor-clerk-native
 ```
 
 ## iOS Setup
@@ -218,7 +236,7 @@ Add your Clerk publishable key:
 ## React/JavaScript Usage
 
 ```typescript
-import { ClerkProvider, useAuth, useUser, useSignIn, useSignUp } from 'capacitor-clerk-native';
+import { ClerkProvider, useAuth, useUser, useSignIn, useSignUp } from '@trainon-inc/capacitor-clerk-native';
 
 // Wrap your app
 function App() {
