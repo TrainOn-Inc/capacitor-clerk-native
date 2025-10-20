@@ -144,3 +144,25 @@ jobs:
             LICENSE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish package
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Ensure npm uses GitHub Packages for the @trainon-inc scope
+          npm config set @trainon-inc:registry https://npm.pkg.github.com
+
+          # Verify package version matches tag
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Tag version: $TAG_VERSION, package.json version: $PKG_VERSION"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Version mismatch between tag and package.json. Aborting publish."
+            exit 1
+          fi
+
+          # Publish to GitHub Packages
+          npm publish --registry https://npm.pkg.github.com
+
+
