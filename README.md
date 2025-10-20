@@ -1,6 +1,6 @@
 # capacitor-clerk-native
 
-A Capacitor plugin for native Clerk authentication on iOS and Android using the bridge pattern to seamlessly integrate Clerk's native SDKs with CocoaPods/Gradle-based Capacitor plugins!
+A Capacitor plugin for native Clerk authentication on iOS and Android using the bridge pattern to seamlessly integrate Clerk's native SDKs with CocoaPods/Gradle-based Capacitor plugins.
 
 ## The Problem This Solves
 
@@ -414,4 +414,3 @@ Created by the TrainOn Team to solve CocoaPods ↔ SPM conflicts when integratin
 - [GitHub Issues](https://github.com/Trainon-Inc/capacitor-clerk-native/issues)
 - [Clerk Documentation](https://clerk.com/docs)
 - [Capacitor Documentation](https://capacitorjs.com/docs)
-
