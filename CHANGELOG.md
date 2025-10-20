@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.8.0] - 2025-10-20
+
+### Changed
+- Merge branch 'main' of https://github.com/TrainOn-Inc/capacitor-clerk-native
+
+
 ## [1.7.0] - 2025-10-20
 
 ### Changed
