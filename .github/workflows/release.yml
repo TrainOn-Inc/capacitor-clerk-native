@@ -146,19 +146,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package
-        if: startsWith(github.ref, 'refs/tags/v')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Ensure npm uses GitHub Packages for the @trainon-inc scope
           npm config set @trainon-inc:registry https://npm.pkg.github.com
 
-          # Verify package version matches tag
-          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          # Use the newly bumped version created earlier in this job
+          TAG_VERSION=${{ steps.bump_version.outputs.version }}
           PKG_VERSION=$(node -p "require('./package.json').version")
-          echo "Tag version: $TAG_VERSION, package.json version: $PKG_VERSION"
+          echo "Bumped version: $TAG_VERSION, package.json version: $PKG_VERSION"
+
           if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
-            echo "Version mismatch between tag and package.json. Aborting publish."
+            echo "Version mismatch: bumped version ($TAG_VERSION) != package.json ($PKG_VERSION). Aborting publish."
             exit 1
           fi
 
