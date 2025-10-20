@@ -2,32 +2,39 @@
 
 ## Creating a New Release
 
-### Automated Release (Recommended)
+### Fully Automated Release (Default)
+
+**Just push to main!** 🚀
+
+Every push to the `main` branch automatically:
+1. Checks if a tag exists for the current version
+2. If tag exists → bumps the **minor version** (e.g., 1.0.0 → 1.1.0)
+3. Creates a new tag
+4. Builds the package
+5. Creates a GitHub Release
+6. Publishes to GitHub Packages
+
+**No manual steps required!** The version increments automatically on every merge to main.
+
+### Manual Version Control
+
+If you need to control the version manually:
 
 1. **Update version** in `package.json`:
 ```bash
 # For patch release (1.0.0 -> 1.0.1)
-npm version patch
-
-# For minor release (1.0.0 -> 1.1.0)
-npm version minor
+npm version patch -m "chore: bump version to %s [skip ci]"
 
 # For major release (1.0.0 -> 2.0.0)
-npm version major
+npm version major -m "chore: bump version to %s [skip ci]"
 ```
 
-2. **Update CHANGELOG.md** with release notes
-
-3. **Create and push the tag**:
+2. **Push to main**:
 ```bash
-git push origin main --tags
+git push origin main
 ```
 
-4. **GitHub Actions will automatically**:
-   - Build the package
-   - Run tests
-   - Create a GitHub Release
-   - Publish to GitHub Packages
+3. The auto-version workflow will detect the new version and create a release.
 
 ### Manual Release
 
@@ -84,21 +91,46 @@ npm install @trainon-inc/capacitor-clerk-native
 
 ## Continuous Deployment Flow
 
+### Automatic (Default)
+
 ```
-main branch
-    ↓
-Commit & Push
+Commit & Push to main
     ↓
 CI runs (build, test)
     ↓
-npm version [patch|minor|major]
+Auto-version workflow checks tag
     ↓
-git push --tags
+Tag exists? → Bump minor version
     ↓
-Release workflow triggers
+Create new tag
     ↓
-GitHub Release created
+Build & Create GitHub Release
     ↓
-Published to GitHub Packages
+Publish to GitHub Packages
 ```
+
+### Manual Control
+
+```
+Update package.json version [skip ci]
+    ↓
+Commit & Push to main
+    ↓
+Auto-version workflow detects new version
+    ↓
+Create tag for new version
+    ↓
+Build & Create GitHub Release
+    ↓
+Publish to GitHub Packages
+```
+
+## Skipping Auto-Versioning
+
+To skip the auto-version workflow (e.g., for documentation updates), include `[skip ci]` in your commit message:
+
+```bash
+git commit -m "docs: update README [skip ci]"
+```
+
 

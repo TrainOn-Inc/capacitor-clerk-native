@@ -26,7 +26,7 @@ Update your `apps/member/package.json`:
   "dependencies": {
     // Remove this:
     // "@train-on/capacitor-clerk-native": "workspace:*"
-    
+
     // Add this:
     "@trainon-inc/capacitor-clerk-native": "^1.0.0"
   }
@@ -59,10 +59,10 @@ Update `apps/member/ios/App/Podfile`:
 def capacitor_pods
   pod 'Capacitor', :path => '.../@capacitor/ios'
   pod 'CapacitorCordova', :path => '.../@capacitor/ios'
-  
+
   # Old (remove):
   # pod 'TrainOnCapacitorClerkNative', :path => '../../../../libs/capacitor-clerk-native'
-  
+
   # This will be automatically added by capacitor sync:
   # It will reference the installed npm package
 end

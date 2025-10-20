@@ -1,6 +1,8 @@
-name: Release
+name: Manual Release
 
+# This workflow is only triggered manually or by tags created outside of auto-version
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -45,12 +47,6 @@ jobs:
             See [CHANGELOG.md](https://github.com/TrainOn-Inc/capacitor-clerk-native/blob/main/CHANGELOG.md) for details.
             
             ## Installation
-            
-            ```bash
-            npm install @trainon-inc/capacitor-clerk-native@${{ steps.get_version.outputs.VERSION }}
-            ```
-            
-            Or install from GitHub Packages:
             
             ```bash
             npm install @trainon-inc/capacitor-clerk-native@${{ steps.get_version.outputs.VERSION }} --registry=https://npm.pkg.github.com
