@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/**'
-      - 'README.md'
-      - 'CHANGELOG.md'
-      - 'LICENSE'
-      - '*.md'
 
 permissions:
   contents: write
@@ -19,7 +13,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    
+
     # Skip if commit message contains [skip ci] or starts with "chore: bump version"
     if: |
       !contains(github.event.head_commit.message, '[skip ci]') &&
@@ -50,18 +44,18 @@ jobs:
           # Get the latest tag, default to v0.0.0 if none exists
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest tag: $LATEST_TAG"
-          
+
           # Remove 'v' prefix
           CURRENT_VERSION=${LATEST_TAG#v}
           echo "Current version: $CURRENT_VERSION"
-          
+
           # Split version into major.minor.patch
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-          
+
           # Bump minor version
           NEW_MINOR=$((MINOR + 1))
           NEW_VERSION="$MAJOR.$NEW_MINOR.0"
-          
+
           echo "New version: $NEW_VERSION"
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
@@ -89,7 +83,7 @@ jobs:
             echo "### Changed" >> changelog_entry.tmp
             echo "- $COMMIT_MSG" >> changelog_entry.tmp
             echo "" >> changelog_entry.tmp
-            
+
             # Combine with existing changelog
             tail -n +2 CHANGELOG.md >> changelog_entry.tmp
             echo "# Changelog" > CHANGELOG.md
