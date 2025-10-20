@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.0] - 2025-10-20
+
+### Changed
+- fix: update README for clarity and add pnpm-lock.yaml for dependency management
+
+
 ## [1.6.0] - 2025-10-20
 
 ### Changed
