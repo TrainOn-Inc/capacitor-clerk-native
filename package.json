@@ -1,0 +1,76 @@
+{
+  "name": "capacitor-clerk-native",
+  "version": "1.0.0",
+  "description": "Capacitor plugin for Clerk native authentication using bridge pattern to integrate Clerk iOS/Android SDKs with CocoaPods/Gradle",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "android/src/main/",
+    "android/build.gradle",
+    "dist/",
+    "ios/Plugin/",
+    "ClerkNativeCapacitor.podspec",
+    "README.md",
+    "LICENSE"
+  ],
+  "author": "TrainOn Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trainon/capacitor-clerk-native.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trainon/capacitor-clerk-native/issues"
+  },
+  "homepage": "https://github.com/trainon/capacitor-clerk-native#readme",
+  "keywords": [
+    "capacitor",
+    "capacitor-plugin",
+    "plugin",
+    "native",
+    "clerk",
+    "clerk-auth",
+    "authentication",
+    "ios",
+    "android",
+    "cocoapods",
+    "swift-package-manager",
+    "bridge-pattern"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf ./dist",
+    "watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "react": "^19.0.0",
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "@capacitor/core": "^6.0.0"
+  },
+  "prettier": "@ionic/prettier-config",
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended"
+  },
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    },
+    "android": {
+      "src": "android"
+    }
+  }
+}
+

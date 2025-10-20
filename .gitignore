@@ -1,0 +1,50 @@
+# Compiled output
+/dist
+*.tsbuildinfo
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Capacitor
+.capacitor
+
+# iOS
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata
+ios/Pods
+ios/Podfile.lock
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+DerivedData
+*.xcuserstate
+xcuserdata
+
+# Android
+android/build
+android/.gradle
+android/local.properties
+*.iml
+.gradle
+/build/
+/captures
+.externalNativeBuild
+.cxx
+
+# Misc
+*.log
+.env
+.env.local
+
