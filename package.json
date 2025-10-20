@@ -1,12 +1,13 @@
 {
   "name": "@trainon-inc/capacitor-clerk-native",
-  "version": "1.2.0",
+  "version": "1.0.0",
   "description": "Capacitor plugin for Clerk native authentication using bridge pattern to integrate Clerk iOS/Android SDKs with CocoaPods/Gradle",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
   },
   "exports": {
     ".": {
@@ -79,3 +80,4 @@
     }
   }
 }
+
