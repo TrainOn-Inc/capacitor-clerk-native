@@ -25,7 +25,7 @@ This allows your Capacitor app to use Clerk's native iOS/Android SDKs (following
 ### Why This Approach?
 
 - ✅ Uses **official Clerk iOS SDK** - same as native Swift apps
-- ✅ Follows **Clerk's best practices** for iOS integration  
+- ✅ Follows **Clerk's best practices** for iOS integration
 - ✅ **No WebView limitations** - native authentication flows
 - ✅ **CocoaPods compatible** - works with Capacitor's build system
 - ✅ **Reusable** - bridge pattern can be adapted for other native SDKs
