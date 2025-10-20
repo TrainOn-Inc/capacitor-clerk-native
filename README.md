@@ -414,3 +414,4 @@ Created by the TrainOn Team to solve CocoaPods ↔ SPM conflicts when integratin
 - [GitHub Issues](https://github.com/Trainon-Inc/capacitor-clerk-native/issues)
 - [Clerk Documentation](https://clerk.com/docs)
 - [Capacitor Documentation](https://capacitorjs.com/docs)
+
