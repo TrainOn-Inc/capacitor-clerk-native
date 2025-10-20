@@ -188,13 +188,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let publishableKey = ProcessInfo.processInfo.environment["CLERK_PUBLISHABLE_KEY"] ?? Bundle.main.infoDictionary?["ClerkPublishableKey"] as? String {
             Clerk.shared.configure(publishableKey: publishableKey)
         }
-        
+
         // Set up the Clerk bridge for the Capacitor plugin
         ClerkNativePlugin.setClerkBridge(clerkBridge)
-        
+
         return true
     }
-    
+
     // ... rest of AppDelegate methods
 }
 ```
@@ -250,13 +250,13 @@ function App() {
 // Use in components
 function LoginPage() {
   const { signIn } = useSignIn();
-  
+
   const handleLogin = async () => {
     const result = await signIn.create({
       identifier: email,
       password: password
     });
-    
+
     if (result.status === 'complete') {
       // Navigate to app
     }
@@ -267,7 +267,7 @@ function LoginPage() {
 function Profile() {
   const { user } = useUser();
   const { getToken } = useAuth();
-  
+
   const token = await getToken();
 }
 ```
@@ -332,6 +332,6 @@ Created by the TrainOn Team to solve CocoaPods ↔ SPM conflicts when integratin
 
 ## Support
 
-- [GitHub Issues](https://github.com/trainon/capacitor-clerk-native/issues)
+- [GitHub Issues](https://github.com/Trainon-Inc/capacitor-clerk-native/issues)
 - [Clerk Documentation](https://clerk.com/docs)
 - [Capacitor Documentation](https://capacitorjs.com/docs)
