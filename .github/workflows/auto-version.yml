@@ -64,9 +64,21 @@ jobs:
       - name: Bump version (minor)
         if: steps.check_tag.outputs.exists == 'true'
         run: |
-          npm version minor -m "chore: bump version to %s [skip ci]"
+          # Delete the tag if it exists (to avoid npm version error)
+          git tag -d "v${{ steps.current_version.outputs.version }}" || true
+          git push --delete origin "v${{ steps.current_version.outputs.version }}" || true
+          
+          # Bump version
+          npm version minor --no-git-tag-version
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          
+          # Commit the version change
+          git add package.json
+          git commit -m "chore: bump version to $NEW_VERSION [skip ci]"
+          
+          # Create and push the new tag
+          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
 
       - name: Update CHANGELOG
         if: steps.check_tag.outputs.exists == 'true'
@@ -136,4 +148,5 @@ jobs:
         run: npm publish --registry=https://npm.pkg.github.com
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 

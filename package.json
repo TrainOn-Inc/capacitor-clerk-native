@@ -21,7 +21,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "ClerkNativeCapacitor.podspec",
+    "TrainonIncCapacitorClerkNative.podspec",
     "README.md",
     "LICENSE"
   ],
@@ -73,8 +73,7 @@
   },
   "capacitor": {
     "ios": {
-      "src": "ios",
-      "name": "ClerkNativeCapacitor"
+      "src": "ios"
     },
     "android": {
       "src": "android"
