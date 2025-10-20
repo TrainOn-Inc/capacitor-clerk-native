@@ -82,23 +82,28 @@ jobs:
           COMMIT_MSG="${{ github.event.head_commit.message }}"
 
           if [ -f CHANGELOG.md ]; then
-            # Add new version entry after the first line (assuming it's "# Changelog")
-            sed -i "1a\\
-\\
-## [$VERSION] - $DATE\\
-\\
-### Changed\\
-- $COMMIT_MSG\\
-" CHANGELOG.md
+            # Create temp file with new entry
+            echo "" > changelog_entry.tmp
+            echo "## [$VERSION] - $DATE" >> changelog_entry.tmp
+            echo "" >> changelog_entry.tmp
+            echo "### Changed" >> changelog_entry.tmp
+            echo "- $COMMIT_MSG" >> changelog_entry.tmp
+            echo "" >> changelog_entry.tmp
+            
+            # Combine with existing changelog
+            tail -n +2 CHANGELOG.md >> changelog_entry.tmp
+            echo "# Changelog" > CHANGELOG.md
+            cat changelog_entry.tmp >> CHANGELOG.md
+            rm changelog_entry.tmp
           else
-            cat > CHANGELOG.md << EOF
+            cat > CHANGELOG.md << 'EOF'
           # Changelog
 
-          ## [$VERSION] - $DATE
-
-          ### Changed
-          - $COMMIT_MSG
           EOF
+            echo "## [$VERSION] - $DATE" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "### Changed" >> CHANGELOG.md
+            echo "- $COMMIT_MSG" >> CHANGELOG.md
           fi
 
       - name: Commit version bump
