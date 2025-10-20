@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.0] - 2025-10-20
+
+### Changed
+- Bump version from 1.4.0 to 1.5.0
+
+
 ## [1.5.0] - 2025-10-20
 
 ### Changed
