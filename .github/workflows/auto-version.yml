@@ -17,39 +17,39 @@ jobs:
   version-and-release:
     name: Auto Version and Release
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@trainon-inc'
-      
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Get current version
         id: current_version
         run: |
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version: $CURRENT_VERSION"
-      
+
       - name: Check if tag exists
         id: check_tag
         run: |
@@ -60,20 +60,20 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
             echo "Tag v${{ steps.current_version.outputs.version }} does not exist"
           fi
-      
+
       - name: Bump version (minor)
         if: steps.check_tag.outputs.exists == 'true'
         run: |
           npm version minor -m "chore: bump version to %s [skip ci]"
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
-      
+
       - name: Update CHANGELOG
         if: steps.check_tag.outputs.exists == 'true'
         run: |
           VERSION=${NEW_VERSION:-${{ steps.current_version.outputs.version }}}
           DATE=$(date +%Y-%m-%d)
-          
+
           # Create changelog entry
           sed -i "/## \[Unreleased\]/a\\
           \\
@@ -82,29 +82,29 @@ jobs:
           ### Changed\\
           - Automated release from main branch\\
           " CHANGELOG.md
-          
+
           git add CHANGELOG.md
           git commit -m "docs: update CHANGELOG for v$VERSION [skip ci]" || true
-      
+
       - name: Push changes
         if: steps.check_tag.outputs.exists == 'true'
         run: |
           git push origin main
           git push origin --tags
-      
+
       - name: Create tag for existing version
         if: steps.check_tag.outputs.exists == 'false'
         run: |
           git tag -a "v${{ steps.current_version.outputs.version }}" -m "Release v${{ steps.current_version.outputs.version }}"
           git push origin "v${{ steps.current_version.outputs.version }}"
-      
+
       - name: Get final version
         id: final_version
         run: |
           FINAL_VERSION=$(node -p "require('./package.json').version")
           echo "version=$FINAL_VERSION" >> $GITHUB_OUTPUT
           echo "Final version: $FINAL_VERSION"
-      
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -112,15 +112,15 @@ jobs:
           name: Release v${{ steps.final_version.outputs.version }}
           body: |
             ## Automated Release
-            
+
             This release was automatically created from the main branch.
-            
+
             ### Installation
-            
+
             ```bash
             npm install @trainon-inc/capacitor-clerk-native@${{ steps.final_version.outputs.version }} --registry=https://npm.pkg.github.com
             ```
-            
+
             See [CHANGELOG.md](https://github.com/TrainOn-Inc/capacitor-clerk-native/blob/main/CHANGELOG.md) for details.
           draft: false
           prerelease: false
@@ -131,7 +131,7 @@ jobs:
             LICENSE
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Publish to GitHub Packages
         run: npm publish --registry=https://npm.pkg.github.com
         env:
