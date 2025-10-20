@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.0] - 2025-10-20
+
+### Changed
+- feat: add GitHub Actions workflow for publishing on tag and update release workflow for NPM token usage
+
+
 ## [1.9.0] - 2025-10-20
 
 ### Changed
