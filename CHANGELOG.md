@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.9.0] - 2025-10-20
+
+### Changed
+- fix: update package publishing step to use bumped version for verification
+
+
 ## [1.8.0] - 2025-10-20
 
 ### Changed
