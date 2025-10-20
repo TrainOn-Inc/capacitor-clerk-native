@@ -20,7 +20,15 @@ This plugin uses a **bridge pattern** to resolve the CocoaPods ↔ SPM conflict:
 2. **App Target (SPM)**: Implements the bridge using Clerk's native SDK
 3. **AppDelegate**: Connects them at runtime
 
-This allows your Capacitor app to use Clerk's native iOS/Android SDKs, avoiding WebView cookie issues entirely.
+This allows your Capacitor app to use Clerk's native iOS/Android SDKs (following the official [Clerk iOS Quickstart](https://clerk.com/docs/ios/getting-started/quickstart)), avoiding WebView cookie issues entirely.
+
+### Why This Approach?
+
+- ✅ Uses **official Clerk iOS SDK** - same as native Swift apps
+- ✅ Follows **Clerk's best practices** for iOS integration  
+- ✅ **No WebView limitations** - native authentication flows
+- ✅ **CocoaPods compatible** - works with Capacitor's build system
+- ✅ **Reusable** - bridge pattern can be adapted for other native SDKs
 
 ## Installation
 
@@ -52,7 +60,36 @@ npm install capacitor-clerk-native
 
 ## iOS Setup
 
-### 1. Add Clerk iOS SDK to Your App Target
+### Prerequisites
+
+Before starting, ensure you have:
+- ✅ A [Clerk account](https://dashboard.clerk.com/sign-up)
+- ✅ A Clerk application set up in the dashboard
+- ✅ **Native API enabled** in Clerk Dashboard → Settings → Native Applications
+
+> **Important**: You must enable the Native API in your Clerk Dashboard before proceeding. This is required for native iOS integration.
+
+### 1. Register Your iOS App with Clerk
+
+1. Go to the [**Native Applications**](https://dashboard.clerk.com/last-active?path=native-applications) page in Clerk Dashboard
+2. Click **"Add Application"**
+3. Enter your iOS app details:
+   - **App ID Prefix**: Found in your Apple Developer account or Xcode (Team ID)
+   - **Bundle ID**: Your app's bundle identifier (e.g., `com.trainon.member`)
+4. Note down your **Frontend API URL** (you'll need this for associated domains)
+
+### 2. Add Associated Domain Capability
+
+This is required for seamless authentication flows:
+
+1. In Xcode, select your project → Select your **App** target
+2. Go to **"Signing & Capabilities"** tab
+3. Click **"+ Capability"** → Add **"Associated Domains"**
+4. Under Associated Domains, add: `webcredentials:{YOUR_FRONTEND_API_URL}`
+   - Example: `webcredentials:guiding-serval-42.clerk.accounts.dev`
+   - Get your Frontend API URL from the Native Applications page in Clerk Dashboard
+
+### 3. Add Clerk iOS SDK to Your App Target
 
 1. Open your iOS project in Xcode
 2. Select your **App** target
@@ -62,7 +99,7 @@ npm install capacitor-clerk-native
 6. Select version `0.69.0` or later
 7. Link to your **App** target
 
-### 2. Create the Bridge Implementation
+### 4. Create the Bridge Implementation
 
 Create a file `ClerkBridgeImpl.swift` in your app's directory:
 
@@ -169,7 +206,9 @@ class ClerkBridgeImpl: NSObject, ClerkBridge {
 }
 ```
 
-### 3. Update AppDelegate
+### 5. Update AppDelegate
+
+> **Note**: Your AppDelegate should configure Clerk when the app launches, just like in the [Clerk iOS Quickstart](https://clerk.com/docs/ios/getting-started/quickstart).
 
 ```swift
 import UIKit
@@ -199,7 +238,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 ```
 
-### 4. Add ClerkBridgeImpl.swift to Xcode Project
+### 6. Add ClerkBridgeImpl.swift to Xcode Project
 
 1. In Xcode, right-click your **"App"** folder
 2. Select **"Add Files to 'App'..."**
@@ -208,7 +247,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 5. **Check** the "App" target
 6. Click **"Add"**
 
-### 5. Configure Clerk Publishable Key
+### 7. Configure Clerk Publishable Key
+
+> **Important**: Get your Publishable Key from the [**API Keys**](https://dashboard.clerk.com/last-active?path=api-keys) page in Clerk Dashboard.
 
 **Option A: Build Settings**
 1. Select the **App** target → **Build Settings**
@@ -224,7 +265,7 @@ CLERK_PUBLISHABLE_KEY = pk_test_your_clerk_key_here
 2. Add it to Xcode project
 3. Set it for both Debug and Release configurations in Project Info
 
-### 6. Update Info.plist
+### 8. Update Info.plist
 
 Add your Clerk publishable key:
 
@@ -313,6 +354,44 @@ function Profile() {
 - `useSignIn()` - Sign in methods
 - `useSignUp()` - Sign up methods
 - `useClerk()` - Full Clerk context
+
+## Troubleshooting
+
+### Common Issues
+
+#### "Browser unauthenticated" error in WebView
+✅ **Solved!** This plugin uses native SDKs instead of WebView, eliminating this issue entirely.
+
+#### "Native API not enabled"
+- Go to Clerk Dashboard → Settings → Native Applications
+- Enable the Native API toggle
+- Refresh your app
+
+#### Associated Domain not working
+- Verify you added `webcredentials:{YOUR_FRONTEND_API_URL}` correctly
+- Get the exact URL from Clerk Dashboard → Native Applications
+- Clean build folder and rebuild (Shift+Cmd+K in Xcode)
+
+#### "No such module 'Clerk'" in ClerkBridgeImpl
+- Ensure Clerk iOS SDK is added to your App target (not just the project)
+- Check Package Dependencies tab shows Clerk linked to your target
+- Clean and rebuild
+
+#### Plugin not found or not responding
+- Run `npx cap sync` to sync the plugin
+- Verify plugin is in node_modules: `@trainon-inc/capacitor-clerk-native`
+- Check Podfile includes the plugin after running cap sync
+
+#### Authentication not persisting
+- Clerk handles session persistence automatically
+- Verify `clerk.load()` is called in AppDelegate
+- Check Clerk SDK is properly configured with your publishable key
+
+### Getting Help
+
+- 📖 [Clerk iOS Documentation](https://clerk.com/docs/ios)
+- 💬 [Clerk Discord Community](https://clerk.com/discord)
+- 🐛 [Report Issues](https://github.com/TrainOn-Inc/capacitor-clerk-native/issues)
 
 ## Android Support
 
