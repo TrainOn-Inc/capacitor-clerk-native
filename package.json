@@ -73,7 +73,8 @@
   },
   "capacitor": {
     "ios": {
-      "src": "ios"
+      "src": "ios",
+      "name": "ClerkNativeCapacitor"
     },
     "android": {
       "src": "android"
