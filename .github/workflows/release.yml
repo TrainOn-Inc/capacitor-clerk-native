@@ -1,11 +1,15 @@
-name: Manual Release
+name: Release
 
-# This workflow is only triggered manually or by tags created outside of auto-version
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'LICENSE'
+      - '*.md'
 
 permissions:
   contents: write
@@ -15,10 +19,18 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    
+    # Skip if commit message contains [skip ci] or starts with "chore: bump version"
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      !startsWith(github.event.head_commit.message, 'chore: bump version')
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,35 +39,108 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@trainon-inc'
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get latest tag and bump version
+        id: bump_version
+        run: |
+          # Get the latest tag, default to v0.0.0 if none exists
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag: $LATEST_TAG"
+          
+          # Remove 'v' prefix
+          CURRENT_VERSION=${LATEST_TAG#v}
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Split version into major.minor.patch
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+          
+          # Bump minor version
+          NEW_MINOR=$((MINOR + 1))
+          NEW_VERSION="$MAJOR.$NEW_MINOR.0"
+          
+          echo "New version: $NEW_VERSION"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ steps.bump_version.outputs.version }} --no-git-tag-version --allow-same-version
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      - name: Get version from tag
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Update CHANGELOG
+        run: |
+          VERSION=${{ steps.bump_version.outputs.version }}
+          DATE=$(date +%Y-%m-%d)
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+
+          if [ -f CHANGELOG.md ]; then
+            # Add new version entry after the first line (assuming it's "# Changelog")
+            sed -i "1a\\
+\\
+## [$VERSION] - $DATE\\
+\\
+### Changed\\
+- $COMMIT_MSG\\
+" CHANGELOG.md
+          else
+            cat > CHANGELOG.md << EOF
+          # Changelog
+
+          ## [$VERSION] - $DATE
+
+          ### Changed
+          - $COMMIT_MSG
+          EOF
+          fi
+
+      - name: Commit version bump
+        run: |
+          git add package.json package-lock.json CHANGELOG.md
+          git commit -m "chore: bump version to ${{ steps.bump_version.outputs.version }} [skip ci]"
+          git push origin main
+
+      - name: Create and push tag
+        run: |
+          git tag -a "v${{ steps.bump_version.outputs.version }}" -m "Release v${{ steps.bump_version.outputs.version }}"
+          git push origin "v${{ steps.bump_version.outputs.version }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ github.ref_name }}
+          tag_name: v${{ steps.bump_version.outputs.version }}
+          name: Release v${{ steps.bump_version.outputs.version }}
           body: |
-            ## Changes in this Release
+            ## Release v${{ steps.bump_version.outputs.version }}
+
+            ${{ github.event.head_commit.message }}
+
+            ### Installation
+
+            **From GitHub Packages (requires authentication):**
+            ```bash
+            npm install @trainon-inc/capacitor-clerk-native@${{ steps.bump_version.outputs.version }}
+            ```
+
+            **Directly from GitHub (no authentication):**
+            ```bash
+            npm install github:TrainOn-Inc/capacitor-clerk-native#v${{ steps.bump_version.outputs.version }}
+            ```
 
             See [CHANGELOG.md](https://github.com/TrainOn-Inc/capacitor-clerk-native/blob/main/CHANGELOG.md) for details.
-
-            ## Installation
-
-            ```bash
-            npm install @trainon-inc/capacitor-clerk-native@${{ steps.get_version.outputs.VERSION }} --registry=https://npm.pkg.github.com
-            ```
           draft: false
           prerelease: false
+          generate_release_notes: true
           files: |
             dist/**/*
-            ClerkNativeCapacitor.podspec
+            TrainonIncCapacitorClerkNative.podspec
             README.md
             LICENSE
         env:
@@ -65,4 +150,3 @@ jobs:
         run: npm publish --registry=https://npm.pkg.github.com
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
