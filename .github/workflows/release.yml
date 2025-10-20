@@ -147,10 +147,16 @@ jobs:
 
       - name: Publish package
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Ensure npm uses GitHub Packages for the @trainon-inc scope
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "ERROR: NPM_TOKEN secret is not set. Create a Personal Access Token with 'write:packages' and add it as the repository secret NPM_TOKEN."
+            exit 1
+          fi
+
+          # Ensure npm uses GitHub Packages for the @trainon-inc scope and authenticate
           npm config set @trainon-inc:registry https://npm.pkg.github.com
+          npm config set //npm.pkg.github.com/:_authToken "${NODE_AUTH_TOKEN}"
 
           # Use the newly bumped version created earlier in this job
           TAG_VERSION=${{ steps.bump_version.outputs.version }}
@@ -162,7 +168,7 @@ jobs:
             exit 1
           fi
 
-          # Publish to GitHub Packages
-          npm publish --registry https://npm.pkg.github.com
+          # Publish to GitHub Packages (scoped package public access)
+          npm publish --registry https://npm.pkg.github.com --access public
 
 
