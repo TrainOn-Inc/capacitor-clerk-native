@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.0] - 2025-10-21
+
+### Changed
+- test: trigger CI/CD workflow for npm publishing
+
+
 ## [1.11.0] - 2025-10-21
 
 ### Changed
