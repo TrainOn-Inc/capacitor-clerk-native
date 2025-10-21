@@ -24,8 +24,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@trainon-inc'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Configure Git
         run: |
@@ -50,15 +49,13 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Publish to GitHub Packages
+      - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "ERROR: NPM_TOKEN secret is not set. Create a Personal Access Token with 'write:packages' and add it as the repository secret NPM_TOKEN."
+            echo "ERROR: NPM_TOKEN secret is not set. Create an npm access token and add it as the repository secret NPM_TOKEN."
             exit 1
           fi
 
-          npm config set @trainon-inc:registry https://npm.pkg.github.com
-          npm config set //npm.pkg.github.com/:_authToken "${NODE_AUTH_TOKEN}"
-          npm publish --registry https://npm.pkg.github.com --access public
+          npm publish --access public

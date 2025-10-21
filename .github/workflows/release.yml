@@ -30,8 +30,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@trainon-inc'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Configure Git
         run: |
@@ -123,14 +122,9 @@ jobs:
 
             ### Installation
 
-            **From GitHub Packages (requires authentication):**
+            **From npm (public package):**
             ```bash
             npm install @trainon-inc/capacitor-clerk-native@${{ steps.bump_version.outputs.version }}
-            ```
-
-            **Directly from GitHub (no authentication):**
-            ```bash
-            npm install github:TrainOn-Inc/capacitor-clerk-native#v${{ steps.bump_version.outputs.version }}
             ```
 
             See [CHANGELOG.md](https://github.com/TrainOn-Inc/capacitor-clerk-native/blob/main/CHANGELOG.md) for details.
@@ -145,18 +139,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish package
+      - name: Publish package to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "ERROR: NPM_TOKEN secret is not set. Create a Personal Access Token with 'write:packages' and add it as the repository secret NPM_TOKEN."
+            echo "ERROR: NPM_TOKEN secret is not set. Create an npm access token and add it as the repository secret NPM_TOKEN."
             exit 1
           fi
-
-          # Ensure npm uses GitHub Packages for the @trainon-inc scope and authenticate
-          npm config set @trainon-inc:registry https://npm.pkg.github.com
-          npm config set //npm.pkg.github.com/:_authToken "${NODE_AUTH_TOKEN}"
 
           # Use the newly bumped version created earlier in this job
           TAG_VERSION=${{ steps.bump_version.outputs.version }}
@@ -168,7 +158,7 @@ jobs:
             exit 1
           fi
 
-          # Publish to GitHub Packages (scoped package public access)
-          npm publish --registry https://npm.pkg.github.com --access public
+          # Publish to npm registry (scoped package public access)
+          npm publish --access public
 
 
