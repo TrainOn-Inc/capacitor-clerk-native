@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.11.0] - 2025-10-21
+
+### Changed
+- chore: update package publishing configuration to use npm registry instead of GitHub Packages
+
+
 ## [1.10.0] - 2025-10-20
 
 ### Changed
