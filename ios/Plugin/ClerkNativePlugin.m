@@ -13,5 +13,8 @@ CAP_PLUGIN(ClerkNativePlugin, "ClerkNative",
            CAP_PLUGIN_METHOD(getToken, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(signOut, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(updateUser, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(requestPasswordReset, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(resetPassword, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(refreshSession, CAPPluginReturnPromise);
 )
 

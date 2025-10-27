@@ -1,24 +1,28 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { ClerkNative } from './index';
-import type { ClerkUser } from './definitions';
+import type {
+  ClerkUser,
+  SignInWithEmailResponse,
+  SignUpResponse,
+  SignUpOptions,
+  UpdateUserOptions,
+} from './definitions';
 
 interface ClerkContextValue {
   isLoaded: boolean;
   isSignedIn: boolean;
   user: ClerkUser | null;
-  signInWithEmail: (email: string) => Promise<{ requiresCode: boolean }>;
+  signInWithEmail: (email: string) => Promise<SignInWithEmailResponse>;
   verifyEmailCode: (code: string) => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<void>;
-  signUp: (options: {
-    emailAddress: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-  }) => Promise<{ requiresVerification: boolean }>;
+  signUp: (options: SignUpOptions) => Promise<SignUpResponse>;
   verifySignUpEmail: (code: string) => Promise<void>;
   signOut: () => Promise<void>;
   getToken: () => Promise<string | null>;
-  updateUser: (options: { firstName?: string; lastName?: string }) => Promise<void>;
+  updateUser: (options: UpdateUserOptions) => Promise<void>;
+  requestPasswordReset: (email: string) => Promise<void>;
+  resetPassword: (code: string, newPassword: string) => Promise<void>;
+  refreshSession: () => Promise<string | null>;
 }
 
 const ClerkContext = createContext<ClerkContextValue | null>(null);
@@ -63,21 +67,13 @@ export function ClerkProvider({ publishableKey, children }: ClerkProviderProps) 
     setUser(result.user);
   }, []);
 
-  const signUp = useCallback(
-    async (options: {
-      emailAddress: string;
-      password: string;
-      firstName?: string;
-      lastName?: string;
-    }) => {
-      const result = await ClerkNative.signUp(options);
-      if (!result.requiresVerification) {
-        setUser(result.user);
-      }
-      return result;
-    },
-    []
-  );
+  const signUp = useCallback(async (options: SignUpOptions): Promise<SignUpResponse> => {
+    const result = await ClerkNative.signUp(options);
+    if (!result.requiresVerification) {
+      setUser(result.user);
+    }
+    return result;
+  }, []);
 
   const verifySignUpEmail = useCallback(async (code: string) => {
     const result = await ClerkNative.verifySignUpEmail({ code });
@@ -94,13 +90,23 @@ export function ClerkProvider({ publishableKey, children }: ClerkProviderProps) 
     return result.token;
   }, []);
 
-  const updateUser = useCallback(
-    async (options: { firstName?: string; lastName?: string }) => {
-      const result = await ClerkNative.updateUser(options);
-      setUser(result.user);
-    },
-    []
-  );
+  const updateUser = useCallback(async (options: UpdateUserOptions) => {
+    const result = await ClerkNative.updateUser(options);
+    setUser(result.user);
+  }, []);
+
+  const requestPasswordReset = useCallback(async (email: string) => {
+    await ClerkNative.requestPasswordReset({ email });
+  }, []);
+
+  const resetPassword = useCallback(async (code: string, newPassword: string) => {
+    await ClerkNative.resetPassword({ code, newPassword });
+  }, []);
+
+  const refreshSession = useCallback(async () => {
+    const result = await ClerkNative.refreshSession();
+    return result.token;
+  }, []);
 
   const value: ClerkContextValue = {
     isLoaded,
@@ -114,6 +120,9 @@ export function ClerkProvider({ publishableKey, children }: ClerkProviderProps) 
     signOut,
     getToken,
     updateUser,
+    requestPasswordReset,
+    resetPassword,
+    refreshSession,
   };
 
   return <ClerkContext.Provider value={value}>{children}</ClerkContext.Provider>;
@@ -196,6 +205,15 @@ export function useSignUp() {
     setActive: async () => {
       // Session is automatically set in native plugin
     },
+  };
+}
+
+export function usePasswordReset() {
+  const { requestPasswordReset, resetPassword, isLoaded } = useClerk();
+  return {
+    isLoaded,
+    requestPasswordReset,
+    resetPassword,
   };
 }
 

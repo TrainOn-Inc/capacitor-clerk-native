@@ -168,4 +168,19 @@ public class ClerkNativePlugin: CAPPlugin {
         // User update - not implemented in simplified bridge
         call.reject("Update user not implemented")
     }
+
+    @objc func requestPasswordReset(_ call: CAPPluginCall) {
+        // Password reset request - not implemented in simplified bridge
+        call.reject("Password reset not implemented")
+    }
+
+    @objc func resetPassword(_ call: CAPPluginCall) {
+        // Password reset with code - not implemented in simplified bridge
+        call.reject("Password reset with code not implemented")
+    }
+
+    @objc func refreshSession(_ call: CAPPluginCall) {
+        // Refresh session token - not implemented in simplified bridge
+        call.reject("Refresh session not implemented")
+    }
 }

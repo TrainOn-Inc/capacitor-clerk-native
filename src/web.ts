@@ -1,49 +1,62 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { ClerkNativePlugin, ClerkUser } from './definitions';
+import type {
+  ClerkNativePlugin,
+  LoadResponse,
+  SignInWithEmailResponse,
+  VerifyEmailCodeResponse,
+  SignInWithPasswordResponse,
+  SignUpResponse,
+  VerifySignUpEmailResponse,
+  GetUserResponse,
+  GetTokenResponse,
+  UpdateUserResponse,
+  RefreshSessionResponse,
+  ConfigureOptions,
+  SignInWithEmailOptions,
+  VerifyEmailCodeOptions,
+  SignInWithPasswordOptions,
+  SignUpOptions,
+  VerifySignUpEmailOptions,
+  UpdateUserOptions,
+  RequestPasswordResetOptions,
+  ResetPasswordOptions,
+} from './definitions';
 
 export class ClerkNativeWeb extends WebPlugin implements ClerkNativePlugin {
-  async configure(_options: { publishableKey: string }): Promise<void> {
+  async configure(_options: ConfigureOptions): Promise<void> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async load(): Promise<{ user: ClerkUser | null }> {
+  async load(): Promise<LoadResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async signInWithEmail(_options: { email: string }): Promise<{ requiresCode: boolean }> {
+  async signInWithEmail(_options: SignInWithEmailOptions): Promise<SignInWithEmailResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async verifyEmailCode(_options: { code: string }): Promise<{ user: ClerkUser }> {
+  async verifyEmailCode(_options: VerifyEmailCodeOptions): Promise<VerifyEmailCodeResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async signInWithPassword(_options: {
-    email: string;
-    password: string;
-  }): Promise<{ user: ClerkUser }> {
+  async signInWithPassword(_options: SignInWithPasswordOptions): Promise<SignInWithPasswordResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async signUp(_options: {
-    emailAddress: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-  }): Promise<{ user: ClerkUser; requiresVerification: boolean }> {
+  async signUp(_options: SignUpOptions): Promise<SignUpResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async verifySignUpEmail(_options: { code: string }): Promise<{ user: ClerkUser }> {
+  async verifySignUpEmail(_options: VerifySignUpEmailOptions): Promise<VerifySignUpEmailResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async getUser(): Promise<{ user: ClerkUser | null }> {
+  async getUser(): Promise<GetUserResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async getToken(): Promise<{ token: string | null }> {
+  async getToken(): Promise<GetTokenResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
@@ -51,10 +64,19 @@ export class ClerkNativeWeb extends WebPlugin implements ClerkNativePlugin {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 
-  async updateUser(_options: {
-    firstName?: string;
-    lastName?: string;
-  }): Promise<{ user: ClerkUser }> {
+  async updateUser(_options: UpdateUserOptions): Promise<UpdateUserResponse> {
+    throw this.unimplemented('Clerk Native is only available on iOS and Android');
+  }
+
+  async requestPasswordReset(_options: RequestPasswordResetOptions): Promise<void> {
+    throw this.unimplemented('Clerk Native is only available on iOS and Android');
+  }
+
+  async resetPassword(_options: ResetPasswordOptions): Promise<void> {
+    throw this.unimplemented('Clerk Native is only available on iOS and Android');
+  }
+
+  async refreshSession(): Promise<RefreshSessionResponse> {
     throw this.unimplemented('Clerk Native is only available on iOS and Android');
   }
 }

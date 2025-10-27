@@ -62,5 +62,20 @@ public class ClerkNativePlugin extends Plugin {
     public void updateUser(PluginCall call) {
         call.reject("Android not yet implemented");
     }
+
+    @PluginMethod
+    public void requestPasswordReset(PluginCall call) {
+        call.reject("Android not yet implemented");
+    }
+
+    @PluginMethod
+    public void resetPassword(PluginCall call) {
+        call.reject("Android not yet implemented");
+    }
+
+    @PluginMethod
+    public void refreshSession(PluginCall call) {
+        call.reject("Android not yet implemented");
+    }
 }
 
