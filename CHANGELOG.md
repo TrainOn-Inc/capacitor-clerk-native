@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.13.0] - 2025-10-27
+
+### Changed
+- feat: add password reset functionality and comprehensive type definitions
+
+- Add requestPasswordReset and resetPassword methods
+- Add refreshSession method for token management
+- Add comprehensive type definitions for all methods and parameters
+- Add new usePasswordReset hook
+- Add response types for all plugin methods
+- Add parameter types for all plugin methods
+- Add ClerkError and ClerkState types
+- Update React hooks with proper type annotations
+- Update Web plugin with proper type annotations
+
+
 ## [1.12.0] - 2025-10-21
 
 ### Changed
