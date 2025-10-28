@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.15.0] - 2025-10-28
+
+### Changed
+- feat: release v1.14.0 with email code authentication
+
+
 ## [1.13.0] - 2025-10-27
 
 ### Changed
