@@ -4,6 +4,8 @@ import Capacitor
 // Protocol for Clerk bridge - the App target will implement this
 @objc public protocol ClerkBridge: AnyObject {
     func signIn(withEmail email: String, password: String, completion: @escaping (String?, Error?) -> Void)
+    func signInWithEmailCode(email: String, completion: @escaping (Error?) -> Void)
+    func verifyEmailCode(code: String, completion: @escaping (Error?) -> Void)
     func signUp(withEmail email: String, password: String, completion: @escaping (String?, Error?) -> Void)
     func signOut(completion: @escaping (Error?) -> Void)
     func getToken(completion: @escaping (String?, Error?) -> Void)
@@ -149,14 +151,50 @@ public class ClerkNativePlugin: CAPPlugin {
     }
 
     @objc func signInWithEmail(_ call: CAPPluginCall) {
-        // For now, this just indicates that email code is required
-        // The actual sign-in happens with signInWithPassword
-        call.resolve(["requiresCode": false])
+        guard let bridge = clerkBridge else {
+            call.reject("Clerk bridge not configured")
+            return
+        }
+
+        guard let email = call.getString("email") else {
+            call.reject("Must provide email")
+            return
+        }
+
+        bridge.signInWithEmailCode(email: email) { error in
+            if let error = error {
+                call.reject("Sign in with email failed: \(error.localizedDescription)")
+            } else {
+                call.resolve(["requiresCode": true])
+            }
+        }
     }
 
     @objc func verifyEmailCode(_ call: CAPPluginCall) {
-        // Email code verification - not implemented in simplified bridge
-        call.reject("Email code verification not implemented")
+        guard let bridge = clerkBridge else {
+            call.reject("Clerk bridge not configured")
+            return
+        }
+
+        guard let code = call.getString("code") else {
+            call.reject("Must provide code")
+            return
+        }
+
+        bridge.verifyEmailCode(code: code) { error in
+            if let error = error {
+                call.reject("Email code verification failed: \(error.localizedDescription)")
+            } else {
+                // Get the full user after verification
+                bridge.getUser { user, getUserError in
+                    if let getUserError = getUserError {
+                        call.reject("Verification succeeded but failed to get user: \(getUserError.localizedDescription)")
+                    } else {
+                        call.resolve(["user": user ?? NSNull()])
+                    }
+                }
+            }
+        }
     }
 
     @objc func verifySignUpEmail(_ call: CAPPluginCall) {
