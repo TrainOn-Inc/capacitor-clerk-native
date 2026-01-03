@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.19.0] - 2026-01-03
+
+### Changed
+- Simplify npm publish step in release workflow
+
+Removed NODE_AUTH_TOKEN environment variable and related checks from npm publish step.
+
+
 ## [1.18.0] - 2026-01-03
 
 ### Changed
