@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.20.0] - 2026-01-03
+
+### Changed
+- Fix formatting in RELEASE_GUIDE.md
+
+
 ## [1.19.0] - 2026-01-03
 
 ### Changed
