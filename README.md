@@ -32,7 +32,19 @@ This allows your Capacitor app to use Clerk's native iOS/Android SDKs (following
 
 ## Installation
 
-### From GitHub Packages (Recommended)
+### From npm (Recommended)
+
+```bash
+npm install @trainon-inc/capacitor-clerk-native
+# or
+pnpm add @trainon-inc/capacitor-clerk-native
+# or
+yarn add @trainon-inc/capacitor-clerk-native
+```
+
+### From GitHub Packages
+
+Alternatively, install from GitHub Packages:
 
 1. Create a `.npmrc` file in your project root:
 ```
@@ -43,20 +55,9 @@ This allows your Capacitor app to use Clerk's native iOS/Android SDKs (following
 2. Install the package:
 ```bash
 npm install @trainon-inc/capacitor-clerk-native
-# or
-pnpm add @trainon-inc/capacitor-clerk-native
-# or
-yarn add @trainon-inc/capacitor-clerk-native
 ```
 
 > **Note**: You'll need a GitHub Personal Access Token with `read:packages` permission. [Create one here](https://github.com/settings/tokens/new?scopes=read:packages)
-
-### From NPM (Future)
-
-Once published to npm:
-```bash
-npm install capacitor-clerk-native
-```
 
 ## iOS Setup
 
@@ -315,6 +316,8 @@ function Profile() {
 
 ## Architecture
 
+### iOS Architecture (Bridge Pattern)
+
 ```
 ┌─────────────────────────────────────────────────┐
 │  JavaScript/React (Capacitor WebView)           │
@@ -333,6 +336,22 @@ function Profile() {
 │  - Implements ClerkBridge protocol              │
 │  - Uses Clerk iOS SDK directly                  │
 │  - Handles all Clerk authentication             │
+└─────────────────────────────────────────────────┘
+```
+
+### Android Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│  JavaScript/React (Capacitor WebView)           │
+│  - Uses capacitor-clerk-native hooks            │
+└─────────────────┬───────────────────────────────┘
+                  │ Capacitor Bridge
+┌─────────────────▼───────────────────────────────┐
+│  ClerkNativePlugin (Gradle Module)              │
+│  - Android library module                       │
+│  - Receives calls from JavaScript               │
+│  - Can integrate with Clerk Android SDK         │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -393,9 +412,83 @@ function Profile() {
 - 💬 [Clerk Discord Community](https://clerk.com/discord)
 - 🐛 [Report Issues](https://github.com/TrainOn-Inc/capacitor-clerk-native/issues)
 
-## Android Support
+## Android Setup
 
-Android support is planned. The bridge pattern will work similarly with Gradle and the Clerk Android SDK.
+Android is supported using the same bridge pattern as iOS. The plugin provides a stub implementation that you can extend with the Clerk Android SDK.
+
+### Prerequisites
+
+- ✅ A [Clerk account](https://dashboard.clerk.com/sign-up)
+- ✅ A Clerk application set up in the dashboard
+- ✅ Android Studio with Gradle 8.7+ and AGP 8.5+
+
+### 1. Sync Capacitor
+
+After installing the plugin, sync your Android project:
+
+```bash
+npx cap sync android
+```
+
+This will:
+- Add the plugin to `capacitor.settings.gradle`
+- Add the plugin dependency to `capacitor.build.gradle`
+
+### 2. Plugin Structure
+
+The plugin includes:
+
+```
+android/
+├── build.gradle              # Gradle build configuration
+└── src/
+    └── main/
+        ├── AndroidManifest.xml   # Android manifest
+        └── java/
+            └── com/trainon/capacitor/clerk/
+                └── ClerkNativePlugin.java
+```
+
+### 3. Gradle Configuration
+
+The plugin uses these default configurations (which can be overridden by your app's `variables.gradle`):
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `compileSdkVersion` | 35 | Android compile SDK |
+| `minSdkVersion` | 23 | Minimum Android version |
+| `targetSdkVersion` | 35 | Target Android version |
+| `junitVersion` | 4.13.2 | JUnit test version |
+
+### 4. Build Requirements
+
+- **Gradle**: 8.11.1+
+- **Android Gradle Plugin**: 8.7.2+
+- **Java**: 21
+
+These are configured in the plugin's `build.gradle` and are compatible with Capacitor 7.
+
+### Troubleshooting Android
+
+#### "No matching variant" error
+```
+Could not resolve project :trainon-inc-capacitor-clerk-native
+No matching variant of project was found. No variants exist.
+```
+
+**Solution**: Ensure you have the latest version of the plugin (1.16.0+) which includes the required `build.gradle` and `AndroidManifest.xml` files. Run:
+```bash
+npm update @trainon-inc/capacitor-clerk-native
+npx cap sync android
+```
+
+#### Gradle sync fails
+- Clean the project: **Build → Clean Project**
+- Invalidate caches: **File → Invalidate Caches / Restart**
+- Delete `.gradle` folder and re-sync
+
+#### AGP version mismatch
+If you see AGP version conflicts, ensure your app's `build.gradle` uses AGP 8.5.0 or higher, matching the plugin's requirements.
 
 ## Contributing
 
@@ -411,7 +504,6 @@ Created by the TrainOn Team to solve CocoaPods ↔ SPM conflicts when integratin
 
 ## Support
 
-- [GitHub Issues](https://github.com/Trainon-Inc/capacitor-clerk-native/issues)
+- [GitHub Issues](https://github.com/TrainOn-Inc/capacitor-clerk-native/issues)
 - [Clerk Documentation](https://clerk.com/docs)
 - [Capacitor Documentation](https://capacitorjs.com/docs)
-# Test CI/CD for npm publishing
