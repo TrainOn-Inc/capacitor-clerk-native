@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0] - 2026-01-03
+
+### Changed
+- Merge pull request #1 from TrainOn-Inc/fix/android-build-gradle
+
+fix: add missing Android build.gradle and AndroidManifest.xml
+
+
 ## [1.15.0] - 2025-10-28
 
 ### Changed
