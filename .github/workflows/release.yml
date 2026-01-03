@@ -141,14 +141,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish package to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "ERROR: NPM_TOKEN secret is not set. Create an npm access token and add it as the repository secret NPM_TOKEN."
-            exit 1
-          fi
-
           # Use the newly bumped version created earlier in this job
           TAG_VERSION=${{ steps.bump_version.outputs.version }}
           PKG_VERSION=$(node -p "require('./package.json').version")
@@ -158,8 +151,6 @@ jobs:
             echo "Version mismatch: bumped version ($TAG_VERSION) != package.json ($PKG_VERSION). Aborting publish."
             exit 1
           fi
-
-          # Publish to npm registry (scoped package public access)
-          npm publish --access public
+          npm publish
 
 
