@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.18.0] - 2026-01-03
+
+### Changed
+- Update release.yml
+
+
 ## [1.17.0] - 2026-01-03
 
 ### Changed
