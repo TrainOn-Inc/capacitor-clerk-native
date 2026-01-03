@@ -49,7 +49,7 @@ Alternatively, install from GitHub Packages:
 1. Create a `.npmrc` file in your project root:
 ```
 @trainon-inc:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+//npm.pkg.github.com/:_authToken= YOUR_GITHUB_TOKEN
 ```
 
 2. Install the package:
