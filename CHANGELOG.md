@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.17.0] - 2026-01-03
+
+### Changed
+- Fix formatting of authToken in README
+
+
 ## [1.16.0] - 2026-01-03
 
 ### Changed
