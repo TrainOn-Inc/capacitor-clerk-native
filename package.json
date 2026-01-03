@@ -18,6 +18,7 @@
   "files": [
     "android/src/main/",
     "android/build.gradle",
+    "android/src/main/AndroidManifest.xml",
     "dist/",
     "ios/Plugin/",
     "TrainonIncCapacitorClerkNative.podspec",
