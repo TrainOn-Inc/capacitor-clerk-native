@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.21.0] - 2026-01-03
+
+### Changed
+- Update Node.js version to 24.5.0 in release workflow
+
+
 ## [1.20.0] - 2026-01-03
 
 ### Changed
