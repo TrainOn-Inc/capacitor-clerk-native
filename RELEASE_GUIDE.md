@@ -10,7 +10,7 @@ Every push to the `main` branch automatically:
 1. Checks if a tag exists for the current version
 2. If tag exists → bumps the **minor version** (e.g., 1.0.0 → 1.1.0)
 3. Creates a new tag
-4. Builds the package
+4. Build the package
 5. Creates a GitHub Release
 6. Publishes to GitHub Packages
 
