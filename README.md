@@ -339,19 +339,21 @@ function Profile() {
 └─────────────────────────────────────────────────┘
 ```
 
-### Android Architecture
+### Android Architecture (Web Provider)
 
 ```
 ┌─────────────────────────────────────────────────┐
 │  JavaScript/React (Capacitor WebView)           │
-│  - Uses capacitor-clerk-native hooks            │
-└─────────────────┬───────────────────────────────┘
-                  │ Capacitor Bridge
-┌─────────────────▼───────────────────────────────┐
-│  ClerkNativePlugin (Gradle Module)              │
-│  - Android library module                       │
-│  - Receives calls from JavaScript               │
-│  - Can integrate with Clerk Android SDK         │
+│  - Uses @clerk/clerk-react (web provider)       │
+│  - Full Clerk functionality via web SDK         │
+└─────────────────────────────────────────────────┘
+         (No native plugin needed for auth)
+
+┌─────────────────────────────────────────────────┐
+│  ClerkNativePlugin (Gradle Module) - Stub       │
+│  - Exists for Capacitor plugin registration     │
+│  - Returns "use web provider" for all methods   │
+│  - No native Clerk SDK dependency               │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -414,80 +416,51 @@ function Profile() {
 
 ## Android Setup
 
-Android is fully supported with the native Clerk Android SDK integration. Unlike iOS, Android doesn't require a bridge pattern - the plugin directly integrates with the Clerk Android SDK.
+**Important**: On Android, this plugin provides a stub implementation. Android WebViews work well with web-based authentication (unlike iOS which has cookie issues), so **Android should use the web Clerk provider (`@clerk/clerk-react`)** instead of the native plugin.
 
-### Prerequisites
+### Why Web Provider for Android?
 
-- ✅ A [Clerk account](https://dashboard.clerk.com/sign-up)
-- ✅ A Clerk application set up in the dashboard
-- ✅ **Native API enabled** in Clerk Dashboard → Settings → Native Applications
-- ✅ Android Studio with Gradle 8.7+ and AGP 8.5+
-- ✅ JDK 17 or higher
+- ✅ Android WebViews handle cookies correctly - no authentication issues
+- ✅ The Clerk Android SDK is still in early stages (v0.1.x) with evolving APIs
+- ✅ Using `@clerk/clerk-react` provides a stable, well-tested experience
+- ✅ Simpler setup - no native configuration required
 
-### 1. Register Your Android App with Clerk
+### Recommended App Setup
 
-1. Go to the [**Native Applications**](https://dashboard.clerk.com/last-active?path=native-applications) page in Clerk Dashboard
-2. Click **"Add Application"**
-3. Select **Android** tab
-4. Enter your Android app details:
-   - **Package Name**: Your app's package name (e.g., `com.trainon.member`)
-   - **SHA256 Fingerprint**: Your app's signing certificate fingerprint (get it with `./gradlew signingReport`)
-
-### 2. Sync Capacitor
-
-After installing the plugin, sync your Android project:
-
-```bash
-npx cap sync android
-```
-
-This will:
-- Add the plugin to `capacitor.settings.gradle`
-- Add the plugin dependency to `capacitor.build.gradle`
-- Include the Clerk Android SDK automatically
-
-### 3. Configure Clerk in Your App
-
-The plugin automatically handles Clerk initialization when you call `configure()` from JavaScript. No additional Android-specific setup is required!
+Configure your app to use the native plugin only on iOS:
 
 ```typescript
-import { ClerkNative } from '@trainon-inc/capacitor-clerk-native';
+import { Capacitor } from "@capacitor/core";
+import { ClerkProvider as WebClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider as NativeClerkProvider } from "@trainon-inc/capacitor-clerk-native";
 
-// Configure Clerk (call once at app startup)
-await ClerkNative.configure({
-  publishableKey: 'pk_test_your_clerk_key_here'
-});
+// Use native Clerk only on iOS (due to WebView cookie issues)
+// Android WebViews work fine with web Clerk
+const isIOS = Capacitor.getPlatform() === "ios";
+const ClerkProvider = isIOS ? NativeClerkProvider : WebClerkProvider;
 
-// Load and check for existing session
-const { user } = await ClerkNative.load();
+export function App() {
+  const clerkProps = isIOS
+    ? { publishableKey: "pk_test_..." }
+    : {
+        publishableKey: "pk_test_...",
+        signInFallbackRedirectUrl: "/home",
+        signUpFallbackRedirectUrl: "/home",
+      };
+
+  return (
+    <ClerkProvider {...clerkProps}>
+      <YourApp />
+    </ClerkProvider>
+  );
+}
 ```
 
-### 4. Plugin Features
-
-The Android implementation supports all authentication methods:
-
-| Method | Description |
-|--------|-------------|
-| `configure()` | Initialize Clerk with publishable key |
-| `load()` | Load Clerk and check for existing session |
-| `signInWithPassword()` | Sign in with email and password |
-| `signInWithEmail()` | Start email code sign in flow |
-| `verifyEmailCode()` | Verify email code |
-| `signUp()` | Create a new account |
-| `verifySignUpEmail()` | Verify sign up email |
-| `getUser()` | Get current user |
-| `getToken()` | Get authentication token |
-| `signOut()` | Sign out current user |
-| `updateUser()` | Update user profile |
-| `requestPasswordReset()` | Request password reset |
-| `resetPassword()` | Reset password with code |
-| `refreshSession()` | Refresh session token |
-
-### 5. Build Requirements
+### Build Requirements
 
 - **Gradle**: 8.11.1+
-- **Android Gradle Plugin**: 8.7.2+
-- **Java/Kotlin**: 17+
+- **Android Gradle Plugin**: 8.5.0+
+- **Java**: 17+
 - **Min SDK**: 23 (Android 6.0)
 - **Target SDK**: 35 (Android 15)
 
@@ -499,26 +472,20 @@ Could not resolve project :trainon-inc-capacitor-clerk-native
 No matching variant of project was found. No variants exist.
 ```
 
-**Solution**: Ensure you have the latest version of the plugin which includes the required build files:
+**Solution**: Update to the latest plugin version:
 ```bash
 npm update @trainon-inc/capacitor-clerk-native
 npx cap sync android
 ```
 
 #### "invalid source release: 21" error
-The plugin uses Java 17 by default. Ensure your Android Studio uses JDK 17+:
+The plugin uses Java 17. Ensure your Android Studio uses JDK 17+:
 - **File → Project Structure → SDK Location → Gradle JDK** → Select JDK 17+
 
 #### Gradle sync fails
 - Clean the project: **Build → Clean Project**
 - Invalidate caches: **File → Invalidate Caches / Restart**
 - Delete `.gradle` folder and re-sync
-
-#### Network errors
-Ensure INTERNET permission is in your `AndroidManifest.xml`:
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-```
 
 ## Contributing
 
