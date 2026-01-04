@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.22.0] - 2026-01-04
+
+### Changed
+- Merge pull request #3 from TrainOn-Inc/feat/android-clerk-implementation
+
+feat: implement Android Clerk SDK integration
+
+
 ## [1.21.0] - 2026-01-03
 
 ### Changed
