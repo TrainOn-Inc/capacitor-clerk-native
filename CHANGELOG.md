@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.0] - 2026-01-04
+
+### Changed
+- Merge pull request #5 from TrainOn-Inc/fix/android-java17-stub
+
+fix: revert Android to simple Java stub, use Java 17
+
+
 ## [1.22.0] - 2026-01-04
 
 ### Changed
