@@ -49,7 +49,7 @@ Alternatively, install from GitHub Packages:
 1. Create a `.npmrc` file in your project root:
 ```
 @trainon-inc:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken= YOUR_GITHUB_TOKEN
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
 ```
 
 2. Install the package:
@@ -414,15 +414,26 @@ function Profile() {
 
 ## Android Setup
 
-Android is supported using the same bridge pattern as iOS. The plugin provides a stub implementation that you can extend with the Clerk Android SDK.
+Android is fully supported with the native Clerk Android SDK integration. Unlike iOS, Android doesn't require a bridge pattern - the plugin directly integrates with the Clerk Android SDK.
 
 ### Prerequisites
 
 - ✅ A [Clerk account](https://dashboard.clerk.com/sign-up)
 - ✅ A Clerk application set up in the dashboard
+- ✅ **Native API enabled** in Clerk Dashboard → Settings → Native Applications
 - ✅ Android Studio with Gradle 8.7+ and AGP 8.5+
+- ✅ JDK 17 or higher
 
-### 1. Sync Capacitor
+### 1. Register Your Android App with Clerk
+
+1. Go to the [**Native Applications**](https://dashboard.clerk.com/last-active?path=native-applications) page in Clerk Dashboard
+2. Click **"Add Application"**
+3. Select **Android** tab
+4. Enter your Android app details:
+   - **Package Name**: Your app's package name (e.g., `com.trainon.member`)
+   - **SHA256 Fingerprint**: Your app's signing certificate fingerprint (get it with `./gradlew signingReport`)
+
+### 2. Sync Capacitor
 
 After installing the plugin, sync your Android project:
 
@@ -433,40 +444,52 @@ npx cap sync android
 This will:
 - Add the plugin to `capacitor.settings.gradle`
 - Add the plugin dependency to `capacitor.build.gradle`
+- Include the Clerk Android SDK automatically
 
-### 2. Plugin Structure
+### 3. Configure Clerk in Your App
 
-The plugin includes:
+The plugin automatically handles Clerk initialization when you call `configure()` from JavaScript. No additional Android-specific setup is required!
 
+```typescript
+import { ClerkNative } from '@trainon-inc/capacitor-clerk-native';
+
+// Configure Clerk (call once at app startup)
+await ClerkNative.configure({
+  publishableKey: 'pk_test_your_clerk_key_here'
+});
+
+// Load and check for existing session
+const { user } = await ClerkNative.load();
 ```
-android/
-├── build.gradle              # Gradle build configuration
-└── src/
-    └── main/
-        ├── AndroidManifest.xml   # Android manifest
-        └── java/
-            └── com/trainon/capacitor/clerk/
-                └── ClerkNativePlugin.java
-```
 
-### 3. Gradle Configuration
+### 4. Plugin Features
 
-The plugin uses these default configurations (which can be overridden by your app's `variables.gradle`):
+The Android implementation supports all authentication methods:
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `compileSdkVersion` | 35 | Android compile SDK |
-| `minSdkVersion` | 23 | Minimum Android version |
-| `targetSdkVersion` | 35 | Target Android version |
-| `junitVersion` | 4.13.2 | JUnit test version |
+| Method | Description |
+|--------|-------------|
+| `configure()` | Initialize Clerk with publishable key |
+| `load()` | Load Clerk and check for existing session |
+| `signInWithPassword()` | Sign in with email and password |
+| `signInWithEmail()` | Start email code sign in flow |
+| `verifyEmailCode()` | Verify email code |
+| `signUp()` | Create a new account |
+| `verifySignUpEmail()` | Verify sign up email |
+| `getUser()` | Get current user |
+| `getToken()` | Get authentication token |
+| `signOut()` | Sign out current user |
+| `updateUser()` | Update user profile |
+| `requestPasswordReset()` | Request password reset |
+| `resetPassword()` | Reset password with code |
+| `refreshSession()` | Refresh session token |
 
-### 4. Build Requirements
+### 5. Build Requirements
 
 - **Gradle**: 8.11.1+
 - **Android Gradle Plugin**: 8.7.2+
-- **Java**: 21
-
-These are configured in the plugin's `build.gradle` and are compatible with Capacitor 7.
+- **Java/Kotlin**: 17+
+- **Min SDK**: 23 (Android 6.0)
+- **Target SDK**: 35 (Android 15)
 
 ### Troubleshooting Android
 
@@ -476,19 +499,26 @@ Could not resolve project :trainon-inc-capacitor-clerk-native
 No matching variant of project was found. No variants exist.
 ```
 
-**Solution**: Ensure you have the latest version of the plugin (1.16.0+) which includes the required `build.gradle` and `AndroidManifest.xml` files. Run:
+**Solution**: Ensure you have the latest version of the plugin which includes the required build files:
 ```bash
 npm update @trainon-inc/capacitor-clerk-native
 npx cap sync android
 ```
+
+#### "invalid source release: 21" error
+The plugin uses Java 17 by default. Ensure your Android Studio uses JDK 17+:
+- **File → Project Structure → SDK Location → Gradle JDK** → Select JDK 17+
 
 #### Gradle sync fails
 - Clean the project: **Build → Clean Project**
 - Invalidate caches: **File → Invalidate Caches / Restart**
 - Delete `.gradle` folder and re-sync
 
-#### AGP version mismatch
-If you see AGP version conflicts, ensure your app's `build.gradle` uses AGP 8.5.0 or higher, matching the plugin's requirements.
+#### Network errors
+Ensure INTERNET permission is in your `AndroidManifest.xml`:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
 
 ## Contributing
 
