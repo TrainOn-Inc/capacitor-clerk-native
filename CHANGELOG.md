@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.24.0] - 2026-01-05
+
+### Changed
+- Merge pull request #6 from TrainOn-Inc/feat/android-native-implementation
+
+feat: implement native Android authentication via HTTP API
+
+
 ## [1.23.0] - 2026-01-04
 
 ### Changed
